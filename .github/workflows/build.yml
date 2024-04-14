@@ -38,15 +38,16 @@ jobs:
         needs:
             - build
         runs-on: ubuntu-latest
+        if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
 
         steps:
-            - uses: actions/download-artifact@v3
+            - uses: actions/download-artifact@v2
               with:
                   name: artifacts
                   path: dist
 
             - name: Push build artifacts to PyPI
-              uses: pypa/gh-action-pypi-publish@v1.5.1
+              uses: pypa/gh-action-pypi-publish@v1.4.2
               with:
                   skip_existing: true
                   user: __token__
