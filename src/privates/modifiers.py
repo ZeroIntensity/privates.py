@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import functools
 from types import FrameType, FunctionType
 from typing import Any, Callable, Iterable, TypeVar
