@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import functools
 from types import FrameType, FunctionType
-from typing import Any, Callable, Iterable, TypeVar
+from typing import Any, Callable, Iterable, TypeVar, Union
 
 from typing_extensions import ParamSpec
 
@@ -179,7 +179,7 @@ def function_modifier(
     return inner
 
 
-A = TypeVar("A", bound=type | Callable)
+A = TypeVar("A", bound=Union[type, Callable])
 
 
 def private(
