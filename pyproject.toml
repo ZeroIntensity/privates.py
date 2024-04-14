@@ -24,7 +24,7 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
-dependencies = []
+dependencies = ["typing_extensions"]
 
 [project.urls]
 Documentation = "https://privates.zintensity.dev"

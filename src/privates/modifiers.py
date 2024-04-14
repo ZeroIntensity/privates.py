@@ -1,6 +1,8 @@
 import functools
 from types import FrameType, FunctionType
-from typing import Any, Callable, Iterable, ParamSpec, TypeVar
+from typing import Any, Callable, Iterable, TypeVar
+
+from typing_extensions import ParamSpec
 
 from ._util import get_back_frame
 from .exceptions import AccessError
