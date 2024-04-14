@@ -1,0 +1,63 @@
+[version]
+path = "src/hoist/__about__.py"
+
+[build.targets.sdist]
+include = ["src/"]
+
+[build.targets.wheel]
+packages = ["src/privates"]
+
+[envs.default]
+dependencies = [
+  "coverage[toml]>=6.5",
+  "pytest",
+]
+
+[envs.default.scripts]
+test = "pytest {args:tests}"
+test-cov = "coverage run -m pytest {args:tests}"
+cov-report = [
+  "- coverage combine",
+  "coverage report",
+]
+cov = [
+  "test-cov",
+  "cov-report",
+]
+
+[[envs.all.matrix]]
+python = ["3.7", "3.8", "3.9", "3.10", "3.11"]
+
+[envs.lint]
+detached = true
+dependencies = [
+  "black>=23.1.0",
+  "mypy>=1.0.0",
+  "ruff>=0.0.243",
+]
+[envs.lint.scripts]
+typing = "mypy --install-types --non-interactive {args:privates_py tests}"
+style = [
+  "ruff {args:.}",
+  "black --check --diff {args:.}",
+]
+fmt = [
+  "black {args:.}",
+  "ruff --fix {args:.}",
+  "style",
+]
+all = [
+  "style",
+  "typing",
+]
+
+[envs.docs]
+dependencies = [
+  "mkdocs",
+  "mkdocs-material",
+  "mkdocstrings[python]",
+]
+[envs.docs.scripts]
+build = "mkdocs build --clean"
+serve = "mkdocs serve --dev-addr localhost:8000"
+
