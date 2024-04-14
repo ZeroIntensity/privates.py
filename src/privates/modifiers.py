@@ -185,7 +185,7 @@ def class_modifier(
 
     def inner(*args: Any, **kwargs: Any) -> None:
         caller_frame = get_back_frame()
-        if caller_frame != frame.f_locals:
+        if caller_frame.f_locals != frame.f_locals:
             ok: bool = False
 
             for friend in friends:
