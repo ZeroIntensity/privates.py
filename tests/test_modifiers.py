@@ -1,7 +1,13 @@
 from pytest import raises
 
-from privates import (AccessError, class_modifier, friend, function_modifier,
-                      private, supports_private)
+from privates import (
+    AccessError,
+    class_modifier,
+    friend,
+    function_modifier,
+    private,
+    supports_private,
+)
 
 
 def test_class_modifier():
@@ -160,3 +166,28 @@ def test_friends():
 
         @friend(C)
         def foo(): ...
+
+
+def test_readonly():
+    @supports_private
+    class A:
+        __readonly__ = ("value",)
+
+        def __init__(self, value: int) -> None:
+            self.value = value
+
+    a = A(10)
+    assert a.value == 10
+
+    with raises(AccessError):
+        a.value = 42
+
+    with raises(AccessError):
+        del a.value
+
+    @friend(A)
+    def test():
+        a.value = 42
+
+    test()
+    assert a.value == 42

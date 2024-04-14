@@ -46,12 +46,13 @@ def _check_access(
 def _ensure_access(
     protected: Iterable[str],
     privates: Iterable[str],
+    readonly: Iterable[str],
     subclasses: set[type],
     friends: set[type | FunctionType],
     tp: type,
     name: str,
 ) -> None:
-    if name in protected:
+    if (name in protected) or (name in readonly):
         frame = get_back_frame()
         co_name = frame.f_code.co_name
 
@@ -59,8 +60,13 @@ def _ensure_access(
             if _check_access(co_name, subclass, frame):
                 return
 
+        for friend in friends:
+            if _check_access(co_name, friend, frame):
+                return
+
+        msg = "protected" if name in protected else "read-only"
         raise AccessError(
-            f"attempted to access protected attribute {name!r} outside of subclass to {tp.__name__}"  # noqa
+            f"attempted to access {msg} attribute {name!r} outside of subclass to {tp.__name__}"  # noqa
         )
 
     if (name.startswith("_") and (not name.endswith("__"))) or (
@@ -93,6 +99,7 @@ def supports_private(tp: type[T]) -> type[T]:
     tp.__friends__ = set()  # type: ignore
     privates: Iterable[str] = getattr(tp, "__private__", set())
     protected: Iterable[str] = getattr(tp, "__protected__", set())
+    readonly: Iterable[str] = getattr(tp, "__readonly__", set())
     old_init_subclass = tp.__init_subclass__
     subclasses: set[type] = {tp}
     friends: set[type | FunctionType] = tp.__friends__  # type: ignore
@@ -104,20 +111,49 @@ def supports_private(tp: type[T]) -> type[T]:
     tp.__init_subclass__ = classmethod(subclass_wrapper)  # type: ignore
 
     def get_wrapper(self, name: str) -> Any:
-        _ensure_access(protected, privates, subclasses, friends, tp, name)
+        if name in readonly:
+            # public get access for readonly attributes
+            return old_getattribute(self, name)  # type: ignore
+
+        _ensure_access(
+            protected,
+            privates,
+            set(),
+            subclasses,
+            friends,
+            tp,
+            name,
+        )
         return old_getattribute(self, name)  # type: ignore
 
     def set_wrapper(self, name: str, value: Any) -> Any:
-        _ensure_access(protected, privates, subclasses, friends, tp, name)
+        _ensure_access(
+            protected,
+            privates,
+            readonly,
+            subclasses,
+            friends,
+            tp,
+            name,
+        )
         return old_setattribute(self, name, value)  # type: ignore
 
     def del_wrapper(self, name: str) -> None:
-        _ensure_access(protected, privates, subclasses, friends, tp, name)
+        _ensure_access(
+            protected,
+            privates,
+            readonly,
+            subclasses,
+            friends,
+            tp,
+            name,
+        )
         return old_delattribute(self, name)  # type: ignore
 
     tp.__getattribute__ = get_wrapper  # type: ignore
     tp.__setattr__ = set_wrapper  # type: ignore
     tp.__delattr__ = del_wrapper  # type: ignore
+
     return tp
 
 
@@ -143,15 +179,30 @@ def class_modifier(
             "class_modifier() can only be applied to classes. use function_modifier() instead"  # noqa
         )
     supports_private(target)
+    friends: set[type | FunctionType] = target.__friends__  # type: ignore
 
     init = target.__init__
 
     def inner(*args: Any, **kwargs: Any) -> None:
         caller_frame = get_back_frame()
-        if caller_frame.f_locals != frame.f_locals:
-            raise AccessError(
-                f"attempted to access {target} outside of it's module"
-            )
+        if caller_frame != frame.f_locals:
+            ok: bool = False
+
+            for friend in friends:
+                if isinstance(friend, type):
+                    for attr_name in dir(friend):
+                        func = getattr(friend, attr_name)
+                        if func.__code__ == caller_frame.f_code:
+                            ok = True
+                            break
+                elif friend.__code__ == caller_frame.f_code:
+                    ok = True
+                    break
+
+            if not ok:
+                raise AccessError(
+                    f"attempted to access {target} outside of it's scope"
+                )
 
         init(*args, **kwargs)
 
