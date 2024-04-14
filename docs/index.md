@@ -21,7 +21,7 @@ python3 -m pip install -U privates.py
 py -3 -m pip install -U privates.py
 ```
 
-## Quickstart
+## Example
 
 ```py
 from privates import private
