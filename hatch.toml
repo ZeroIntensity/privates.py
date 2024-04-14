@@ -1,5 +1,5 @@
 [version]
-path = "src/hoist/__about__.py"
+path = "src/privates/__about__.py"
 
 [build.targets.sdist]
 include = ["src/"]
@@ -26,7 +26,7 @@ cov = [
 ]
 
 [[envs.all.matrix]]
-python = ["3.7", "3.8", "3.9", "3.10", "3.11"]
+python = ["3.8", "3.9", "3.10", "3.11", "3.12"]
 
 [envs.lint]
 detached = true

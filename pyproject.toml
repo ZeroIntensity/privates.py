@@ -3,9 +3,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "privates-py"
+name = "privates.py"
 dynamic = ["version"]
-description = ''
+description = 'Stop others from touching your privates.'
 readme = "README.md"
 requires-python = ">=3.7"
 license = "MIT"
@@ -39,41 +39,50 @@ line-length = 79
 target-version = "py38"
 line-length = 79
 select = [
-  "A",
-  "ARG",
-  "B",
-  "C",
-  "DTZ",
-  "E",
-  "EM",
-  "F",
-  "FBT",
-  "I",
-  "ICN",
-  "ISC",
-  "N",
-  "PLC",
-  "PLE",
-  "PLR",
-  "PLW",
-  "Q",
-  "RUF",
-  "S",
-  "T",
-  "TID",
-  "UP",
-  "W",
-  "YTT",
+    "A",
+    "ARG",
+    "B",
+    "C",
+    "DTZ",
+    "E",
+    "EM",
+    "F",
+    "FBT",
+    "I",
+    "ICN",
+    "ISC",
+    "N",
+    "PLC",
+    "PLE",
+    "PLR",
+    "PLW",
+    "Q",
+    "RUF",
+    "S",
+    "T",
+    "TID",
+    "UP",
+    "W",
+    "YTT",
 ]
 ignore = [
-  # Allow non-abstract empty methods in abstract base classes
-  "B027",
-  # Allow boolean positional values in function calls, like `dict.get(... True)`
-  "FBT003",
-  # Ignore checks for possible passwords
-  "S105", "S106", "S107",
-  # Ignore complexity
-  "C901", "PLR0911", "PLR0912", "PLR0913", "PLR0915",
+    # Allow non-abstract empty methods in abstract base classes
+    "B027",
+    # Allow boolean positional values in function calls, like `dict.get(... True)`
+    "FBT003",
+    # Ignore checks for possible passwords
+    "S105", "S106", "S107",
+    # Ignore complexity
+    "C901", "PLR0911", "PLR0912", "PLR0913", "PLR0915",
+
+    # Allow wildcard imports
+    "F403",
+    # Allow relative imports
+    "TID252",
+
+    # Literals in exceptions
+    "EM101", "EM102",
+
 ]
 unfixable = [
   # Don't touch unused imports
@@ -81,7 +90,7 @@ unfixable = [
 ]
 
 [tool.ruff.isort]
-known-first-party = ["privates.py"]
+known-first-party = ["src/privates"]
 
 [tool.ruff.flake8-tidy-imports]
 ban-relative-imports = "all"
@@ -91,16 +100,16 @@ ban-relative-imports = "all"
 "tests/**/*" = ["PLR2004", "S101", "TID252"]
 
 [tool.coverage.run]
-source_pkgs = ["privates.py", "tests"]
+source_pkgs = ["privates", "tests"]
 branch = true
 parallel = true
 omit = [
-  "privates.py/__about__.py",
+  "src/privates/__about__.py",
 ]
 
 [tool.coverage.paths]
-privates = ["privates.py", "*/privates.py/privates.py"]
-tests = ["tests", "*/privates.py/tests"]
+privates = ["src/privates"]
+tests = ["tests"]
 
 [tool.coverage.report]
 exclude_lines = [
