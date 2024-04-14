@@ -25,7 +25,7 @@ def get_back_frame() -> Frame:
 
         if not frame.f_back:
             raise FrameError(
-                f"{frame} (nested {count} time(s) from current frame) has no f_back"
+                f"{frame} (nested {count} time(s) from current frame) has no f_back"  # noqa
             )
 
         frame = frame.f_back

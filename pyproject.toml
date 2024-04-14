@@ -88,6 +88,7 @@ unfixable = [
   # Don't touch unused imports
   "F401",
 ]
+exclude = ["tests"]
 
 [tool.ruff.isort]
 known-first-party = ["src/privates"]

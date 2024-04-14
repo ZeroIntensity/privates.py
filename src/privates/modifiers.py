@@ -1,6 +1,6 @@
 import functools
 from types import FrameType, FunctionType
-from typing import Any, Callable, Iterable, ParamSpec, TypeVar, overload
+from typing import Any, Callable, Iterable, ParamSpec, TypeVar
 
 from ._util import get_back_frame
 from .exceptions import AccessError
@@ -87,8 +87,8 @@ def supports_private(tp: type[T]) -> type[T]:
     old_setattribute = tp.__setattr__
     old_delattribute = tp.__delattr__
     tp.__friends__ = set()  # type: ignore
-    privates = getattr(tp, "__private__", set())
-    protected = getattr(tp, "__protected__", set())
+    privates: Iterable[str] = getattr(tp, "__private__", set())
+    protected: Iterable[str] = getattr(tp, "__protected__", set())
     old_init_subclass = tp.__init_subclass__
     subclasses: set[type] = {tp}
     friends: set[type | FunctionType] = tp.__friends__  # type: ignore
@@ -151,7 +151,7 @@ def class_modifier(
 
         init(*args, **kwargs)
 
-    target.__init__ = inner
+    target.__init__ = inner  # type: ignore
     return target
 
 
@@ -175,25 +175,19 @@ def function_modifier(
     return inner
 
 
-@overload
-def private(func_or_type: Callable[P, T]) -> Callable[P, T]: ...
+A = TypeVar("A", bound=type | Callable)
 
 
-@overload
-def private(func_or_type: type[T]) -> type[T]: ...
-
-
-def private(func_or_type: Callable[P, T] | type[T]) -> Callable[P, T] | type[T]:
+def private(
+    func_or_type: A,
+) -> A:
     """Apply `class_modifier` if the object is a class, otherwise apply `function_modifier`."""  # noqa
     if isinstance(func_or_type, type):
-        return class_modifier(func_or_type)
+        return class_modifier(func_or_type)  # type: ignore
     else:
         if not callable(func_or_type):
             raise TypeError(f"expected a callable, got {func_or_type}")
-        return function_modifier(func_or_type)
-
-
-A = TypeVar("A", bound=type | Callable)
+        return function_modifier(func_or_type)  # type: ignore
 
 
 def friend(

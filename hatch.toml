@@ -7,6 +7,14 @@ include = ["src/"]
 [build.targets.wheel]
 packages = ["src/privates"]
 
+[build.targets.wheel.hooks.mypyc]
+enable-by-default = false
+dependencies = ["hatch-mypyc>=0.14.1"]
+require-runtime-dependencies = true
+mypy-args = [
+  "--no-warn-unused-ignores",
+]
+
 [envs.default]
 dependencies = [
   "coverage[toml]>=6.5",
@@ -36,10 +44,10 @@ dependencies = [
   "ruff>=0.0.243",
 ]
 [envs.lint.scripts]
-typing = "mypy --install-types --non-interactive {args:privates_py tests}"
+typing = "mypy --install-types --non-interactive {args:src/privates}"
 style = [
-  "ruff {args:.}",
-  "black --check --diff {args:.}",
+  "ruff {args:src}",
+  "black --check --diff {args:src}",
 ]
 fmt = [
   "black {args:.}",
