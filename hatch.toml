@@ -7,14 +7,6 @@ include = ["src/"]
 [build.targets.wheel]
 packages = ["src/privates"]
 
-[build.targets.wheel.hooks.mypyc]
-enable-by-default = false
-dependencies = ["hatch-mypyc>=0.14.1"]
-require-runtime-dependencies = true
-mypy-args = [
-  "--no-warn-unused-ignores",
-]
-
 [envs.default]
 dependencies = [
   "coverage[toml]>=6.5",
