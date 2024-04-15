@@ -28,7 +28,16 @@ from privates import private
 
 @private
 class Hello:
-    ...
+    __readonly__ = "bar",
 
-# Hello is now only accessible in this module!
+    def __init__(self):
+        self.bar = "hello world!"
+
+hello = Hello()
+print(hello.bar)  # hello world!
+hello.bar = "goodbye, world :("  # AccessError
 ```
+
+## License
+
+`privates.py` is distributed under the terms of the [MIT](https://spdx.org/licenses/MIT.html) license.
