@@ -5,7 +5,7 @@ repo_name: ZeroIntensity/privates.py
 
 nav:
     - Home: index.md
-    - Limiting to scope: scope_privates.md
+    - Locking to Scope: scope_privates.md
     - Limiting Attributes: attributes.md
     - Reference: reference.md
 
