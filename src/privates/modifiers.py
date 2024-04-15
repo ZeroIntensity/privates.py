@@ -192,6 +192,10 @@ def class_modifier(
                 if isinstance(friend, type):
                     for attr_name in dir(friend):
                         func = getattr(friend, attr_name)
+
+                        if not isinstance(func, FunctionType):
+                            continue
+
                         if func.__code__ == caller_frame.f_code:
                             ok = True
                             break

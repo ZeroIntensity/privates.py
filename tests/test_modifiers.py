@@ -1,13 +1,7 @@
 from pytest import raises
 
-from privates import (
-    AccessError,
-    class_modifier,
-    friend,
-    function_modifier,
-    private,
-    supports_private,
-)
+from privates import (AccessError, class_modifier, friend, function_modifier,
+                      private, supports_private)
 
 
 def test_class_modifier():
@@ -28,7 +22,22 @@ def test_class_modifier():
     with raises(TypeError):
 
         @class_modifier  # type: ignore
-        def hello(): ...
+        def no_good(): ...
+
+    @friend(Test)
+    def hello():
+        t = Test(2)
+        t.value = 42
+        assert t.value == 42
+
+    hello()
+
+    @friend(Test)
+    class B:
+        def __init__(self):
+            self.t = Test(42)
+
+    B()
 
 
 def test_function_modifier():
@@ -81,6 +90,7 @@ def test_private_protocol():
     class A:
         def __init__(self, value: int):
             self._value = value
+            self._test = 0
 
         @property
         def value(self) -> int:
@@ -88,6 +98,9 @@ def test_private_protocol():
 
         def something(self):
             self._value += 1
+
+        def another(self):
+            del self._test
 
     a = A(1)
     with raises(AccessError):
@@ -99,6 +112,8 @@ def test_private_protocol():
 
     with raises(AccessError):
         del a._value
+
+    a.another()
 
 
 def test_protected_protocol():
