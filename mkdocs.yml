@@ -43,8 +43,10 @@ theme:
         repo: fontawesome/brands/github
 
 markdown_extensions:
+markdown_extensions:
     - pymdownx.highlight:
-          anchor_linenums: true
+        anchor_linenums: true
+    - pymdownx.superfences
     - pymdownx.inlinehilite
     - pymdownx.snippets
     - admonition
